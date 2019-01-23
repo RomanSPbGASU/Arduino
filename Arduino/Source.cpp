@@ -1,3 +1,21 @@
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+	int a, b, c;
+	if ((a = 5) + (b = 10) == 15)
+	{
+		cout << "It's working!" << endl;
+	}
+	system("pause");
+}
+
+
+
+
+
 //#include <iostream>
 //#include <random>
 //using namespace std;
