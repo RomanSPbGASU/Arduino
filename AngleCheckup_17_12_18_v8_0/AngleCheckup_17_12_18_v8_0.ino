@@ -28,6 +28,7 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 unsigned long inter_time = 0; // время последнего прерывания
 long theory_time = 0; // время, равное времени последнего прерывания, для диска вращающегося со скоростью 1 об./мин.
 unsigned long first_inter_time = 0;
+unsigned long prev_fit = 0;
 unsigned long inter_count = 0;  // количество прерываний
 unsigned long first_inter_count = 0;
 float angle = 0;
@@ -46,14 +47,14 @@ void setup()
 	tft.setTextSize(2);
 	attachInterrupt(0, OnFirstInterruption, RISING);
 	attachInterrupt(1, OnSecondInterruption, RISING);
-	Serial.println("Time\t\tAngle\tSecond\tFirst\tSpeed");  // отладочный вывод
+	Serial.println("Time\t\tAngle\tSecond\t|\tFirst\tSpeed\tTime first");  // отладочный вывод
 }
 
 void loop()
 {
 	theory_time = inter_count * 250000;
 
-	rps = first_inter_count * 250000. / first_inter_time;
+	rps = 250000. / (float)(first_inter_time - prev_fit);
 
 	angle = (inter_time - theory_time) * 0.00036; // 0.00036 = 4 ср./с * 90 гр. / 10^6 мкс
 
@@ -66,13 +67,14 @@ void loop()
 	tft.print(angle);
 
 	// Отладочный вывод
-	Serial.println((String)inter_time + "\t" + (String)angle + "\t" + (String)inter_count + "\t" + (String)first_inter_count + "\t" + (String)rps);
+	Serial.println((String)inter_time + "\t" + (String)angle + "\t" + (String)inter_count + "\t|\t" + (String)first_inter_count + "\t" + (String)rps + "\t" + (String)first_inter_time);
 	//
 	delay(1000);
 }
 
 void OnFirstInterruption()
 {
+	prev_fit = first_inter_time;
 	first_inter_time = micros();
 	first_inter_count++;
 }
