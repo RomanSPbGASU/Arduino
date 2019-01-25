@@ -14,7 +14,7 @@
 
 #define TFT_CS     10
 #define TFT_RST    12  // you can also connect this to the Arduino reset
-	  // in which case, set this #define pin to 0!
+  // in which case, set this #define pin to 0!
 #define TFT_DC     8
 
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
@@ -27,10 +27,13 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
 unsigned long inter_time = 0; // время последнего прерывания
 long theory_time = 0; // время, равное времени последнего прерывания, для диска вращающегося со скоростью 1 об./мин.
+unsigned long first_inter_time = 0;
 unsigned long inter_count = 0;  // количество прерываний
-long angle = 0;
-//unsigned long theory_angle = 0;	// угол поворота вала
-//unsigned long delta_angle = 0;	// угол диска, относительно вала
+unsigned long first_inter_count = 0;
+float angle = 0;
+float rps = 0;
+//unsigned long theory_angle = 0; // угол поворота вала
+//unsigned long delta_angle = 0;  // угол диска, относительно вала
 
 
 void setup()
@@ -41,13 +44,16 @@ void setup()
 	tft.setRotation(1);
 	tft.setTextColor(ST7735_BLUE);
 	tft.setTextSize(2);
+	attachInterrupt(0, OnFirstInterruption, RISING);
 	attachInterrupt(1, OnSecondInterruption, RISING);
-	Serial.println("Time\t\tAngle\tInter. Count");  // отладочный вывод
+	Serial.println("Time\t\tAngle\tSecond\tFirst\tSpeed");  // отладочный вывод
 }
 
 void loop()
 {
 	theory_time = inter_count * 250000;
+
+	rps = first_inter_count * 250000. / first_inter_time;
 
 	angle = (inter_time - theory_time) * 0.00036; // 0.00036 = 4 ср./с * 90 гр. / 10^6 мкс
 
@@ -60,9 +66,15 @@ void loop()
 	tft.print(angle);
 
 	// Отладочный вывод
-	Serial.println((String)inter_time + "\t" + (String)angle + "\t" + (String)inter_count);
+	Serial.println((String)inter_time + "\t" + (String)angle + "\t" + (String)inter_count + "\t" + (String)first_inter_count + "\t" + (String)rps);
 	//
 	delay(1000);
+}
+
+void OnFirstInterruption()
+{
+	first_inter_time = micros();
+	first_inter_count++;
 }
 
 void OnSecondInterruption()
