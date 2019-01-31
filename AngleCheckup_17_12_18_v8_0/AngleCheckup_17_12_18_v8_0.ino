@@ -36,6 +36,8 @@ unsigned float aver_second_inter_time = 0;
 unsigned int second_inter_count = 0;
 unsigned int second_delta_angle = 0;
 
+float angle = 0;
+
 
 void setup()
 {
@@ -71,6 +73,8 @@ void loop()
 		second_delta_angle = 90 * INTERVAL * 1000 / aver_second_inter_time;
 
 		angle = first_delta_angle - second_delta_angle;
+
+		// Отладочный вывод
 		Serial.println((String)time_delta_first + "\t" + (String)time_delta_second + "\t" + (String)angle);
 	}
 }
