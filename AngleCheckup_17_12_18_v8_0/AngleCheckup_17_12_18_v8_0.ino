@@ -11,6 +11,7 @@
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7735.h> // Hardware-specific library
 #include <SPI.h>
+#include <math.h>
 
 #define TFT_CS     10
 #define TFT_RST    12  // you can also connect this to the Arduino reset
@@ -26,13 +27,20 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 */
 
 unsigned long inter_time = 0; // время последнего прерывания
-long theory_time = 0; // время, равное времени последнего прерывания, для диска вращающегося со скоростью 1 об./мин.
 unsigned long first_inter_time = 0;
+
 unsigned long prev_fit = 0;
+unsigned long prev_it = 0;
+
 unsigned long inter_count = 0;  // количество прерываний
 unsigned long first_inter_count = 0;
-float angle = 0;
-float rps = 0;
+
+long angle = 0;
+
+//float speed_first = 0.;
+//float speed_second = 0.;
+//float speed_delta = 0.;
+
 //unsigned long theory_angle = 0; // угол поворота вала
 //unsigned long delta_angle = 0;  // угол диска, относительно вала
 
@@ -45,36 +53,42 @@ void setup()
 	tft.setRotation(1);
 	tft.setTextColor(ST7735_BLUE);
 	tft.setTextSize(2);
-	attachInterrupt(0, OnFirstInterruption, RISING);
-	attachInterrupt(1, OnSecondInterruption, RISING);
+	attachInterrupt(1, OnFirstInterruption, RISING);
+	attachInterrupt(0, OnSecondInterruption, RISING);
 	Serial.println("Time\t\tAngle\tSecond\t|\tFirst\tSpeed\tTime first");  // отладочный вывод
 }
 
 void loop()
 {
-	theory_time = inter_count * 250000;
+	//speed_first = first_inter_count / first_inter_time;
+	//speed_second = inter_count / inter_time;
+	//speed_delta = abs(speed_first - speed_second) * 250000;
 
-	rps = 250000. / (float)(first_inter_time - prev_fit);
+	//angle = (inter_time - prev_it - first_inter_time + prev_fit) * speed_delta; // 0.00036 = 4 ср./с * 90 гр. / 10^6 мкс
 
-	angle = (inter_time - theory_time) * 0.00036; // 0.00036 = 4 ср./с * 90 гр. / 10^6 мкс
+	angle = (inter_time - prev_it - first_inter_time + prev_fit) * abs(first_inter_count / first_inter_time - inter_count / inter_time) * 250000
 
-	tft.fillScreen(ST7735_BLACK);
+	//tft.fillScreen(ST7735_BLACK);
 
-	tft.setCursor(0, 20);
-	tft.print(inter_time);
+	//tft.setCursor(0, 20);
+	//tft.print(inter_time);
 
-	tft.setCursor(0, 50);
-	tft.print(angle);
+	//tft.setCursor(0, 50);
+	//tft.print(angle);
 
 	// Отладочный вывод
-	Serial.println((String)inter_time + "\t" + (String)angle + "\t" + (String)inter_count + "\t|\t" + (String)first_inter_count + "\t" + (String)rps + "\t" + (String)first_inter_time);
+	Serial.println((String)inter_time + "\t" + (String)angle + "\t" + (String)inter_count + "\t|\t" + (String)first_inter_count + "\t" + (String)speed_first * 250000 + "\t" + (String)first_inter_time);
 	//
+	prev_fit = first_inter_time;
+	prev_it = inter_time;
+	first_inter_count = 0;
+	inter_count = 0;
+
 	delay(1000);
 }
 
 void OnFirstInterruption()
 {
-	prev_fit = first_inter_time;
 	first_inter_time = micros();
 	first_inter_count++;
 }
