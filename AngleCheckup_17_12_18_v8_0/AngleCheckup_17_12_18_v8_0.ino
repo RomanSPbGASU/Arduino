@@ -47,7 +47,7 @@ void setup()
 	tft.setTextSize(2);
 	attachInterrupt(1, OnFirstInterruption, RISING);
 	attachInterrupt(0, OnSecondInterruption, RISING);
-	Serial.println("Time\t\tAngle\tSecond\t|\tFirst\tSpeed\tTime first");  // отладочный вывод
+	Serial.println("Delta_first\tDelta_second\tAngle");  // отладочный вывод
 }
 
 void loop()
