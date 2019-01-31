@@ -25,16 +25,16 @@ const int INTERVAL = 1000; // интервал обновления значен
 unsigned long first_inter_time = 0;
 unsigned long prev_first_inter_time = 0;
 unsigned long time_delta_first = 0;
-unsigned float aver_first_inter_time = 0;
+float aver_first_inter_time = 0;
 unsigned int first_inter_count = 0;
-unsigned int first_delta_angle = 0;
+float first_delta_angle = 0;
 
 unsigned long second_inter_time = 0;
 unsigned long prev_second_inter_time = 0;
 unsigned long time_delta_second = 0;
-unsigned float aver_second_inter_time = 0;
+float aver_second_inter_time = 0;
 unsigned int second_inter_count = 0;
-unsigned int second_delta_angle = 0;
+float second_delta_angle = 0;
 
 float angle = 0;
 
@@ -58,25 +58,24 @@ void loop()
 	// отдельно для первого и второго прерывания,
 	// а потом вычислять их разницу.
 	// Для контроля можно вычислять среднюю скорость и общий угловой путь для каждого диска
-	if (!(millis() % INTERVAL))
-	{
-		time_delta_first = first_inter_time - prev_first_inter_time;
-		prev_first_inter_time = first_inter_time;
-		aver_first_inter_time = time_delta_first / float(first_inter_count);	// время прохода угла в 90 градусов
-		first_inter_count = 0;
-		first_delta_angle = 90 * INTERVAL * 1000 / aver_first_inter_time;
 
-		time_delta_second = second_inter_time - prev_second_inter_time;
-		prev_second_inter_time = second_inter_time;
-		aver_second_inter_time = time_delta_second / second_inter_count;
-		second_inter_count = 0;
-		second_delta_angle = 90 * INTERVAL * 1000 / aver_second_inter_time;
+	time_delta_first = first_inter_time - prev_first_inter_time;
+	prev_first_inter_time = first_inter_time;
+	aver_first_inter_time = time_delta_first / float(first_inter_count);	// время прохода угла в 90 градусов
+	first_inter_count = 0;
+	first_delta_angle = 90l * INTERVAL * 1000 / aver_first_inter_time;
 
-		angle = first_delta_angle - second_delta_angle;
+	time_delta_second = second_inter_time - prev_second_inter_time;
+	prev_second_inter_time = second_inter_time;
+	aver_second_inter_time = time_delta_second / float(second_inter_count);
+	second_inter_count = 0;
+	second_delta_angle = 90l * INTERVAL * 1000 / aver_second_inter_time;
 
-		// Отладочный вывод
-		Serial.println((String)time_delta_first + "\t" + (String)time_delta_second + "\t" + (String)angle);
-	}
+	angle = first_delta_angle - second_delta_angle;
+
+	// Отладочный вывод
+	Serial.println((String)time_delta_first + "\t" + (String)time_delta_second + "\t" + (String)angle);
+ delay(INTERVAL);
 }
 
 void OnFirstInterruption()
