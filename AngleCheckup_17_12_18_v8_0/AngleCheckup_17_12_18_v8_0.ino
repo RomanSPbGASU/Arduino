@@ -66,7 +66,7 @@ void loop()
 
 	//angle = (inter_time - prev_it - first_inter_time + prev_fit) * speed_delta; // 0.00036 = 4 ср./с * 90 гр. / 10^6 мкс
 
-	angle = (inter_time - prev_it - first_inter_time + prev_fit) * abs(first_inter_count / first_inter_time - inter_count / inter_time) * 250000
+	angle = (inter_time - prev_it - first_inter_time + prev_fit) * abs(first_inter_count / first_inter_time - inter_count / inter_time) * 250000;
 
 	//tft.fillScreen(ST7735_BLACK);
 
