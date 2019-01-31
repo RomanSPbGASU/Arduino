@@ -77,7 +77,7 @@ void loop()
 	//tft.print(angle);
 
 	// Отладочный вывод
-	Serial.println((String)inter_time + "\t" + (String)angle + "\t" + (String)inter_count + "\t|\t" + (String)first_inter_count + "\t" + (String)speed_first * 250000 + "\t" + (String)first_inter_time);
+	Serial.println((String)inter_time + "\t" + (String)angle + "\t" + (String)inter_count + "\t|\t" + (String)first_inter_count + "\t" + (String)(first_inter_count / first_inter_time * 250000) + "\t" + (String)first_inter_time);
 	//
 	prev_fit = first_inter_time;
 	prev_it = inter_time;
