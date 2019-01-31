@@ -20,32 +20,21 @@
 
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
-/*
-Программа предназначена для следующих параметров:
-  скорость вращения - 1 оборот в секунду;
-  4 датчика, расположенных под углом в 90 градусов
-*/
+const int INTERVAL = 1000; // интервал обновления значений - 1 секунда
 
-unsigned long inter_time = 0; // время последнего прерывания
 unsigned long first_inter_time = 0;
-
-unsigned long prev_fit = 0;
-unsigned long prev_it = 0;
-
-unsigned long inter_count = 0;  // количество прерываний
-unsigned long first_inter_count = 0;
-
+unsigned long prev_first_inter_time = 0;
 unsigned long time_delta_first = 0;
+unsigned float aver_first_inter_time = 0;
+unsigned int first_inter_count = 0;
+unsigned int first_delta_angle = 0;
+
+unsigned long second_inter_time = 0;
+unsigned long prev_second_inter_time = 0;
 unsigned long time_delta_second = 0;
-
-long angle = 0;
-
-//float speed_first = 0.;
-//float speed_second = 0.;
-//float speed_delta = 0.;
-
-//unsigned long theory_angle = 0; // угол поворота вала
-//unsigned long delta_angle = 0;  // угол диска, относительно вала
+unsigned float aver_second_inter_time = 0;
+unsigned int second_inter_count = 0;
+unsigned int second_delta_angle = 0;
 
 
 void setup()
@@ -63,34 +52,27 @@ void setup()
 
 void loop()
 {
-	//speed_first = first_inter_count / first_inter_time;
-	//speed_second = inter_count / inter_time;
-	//speed_delta = abs(speed_first - speed_second) * 250000;
+	// будем считать изменения угла за 1 секунду (или другой интервал времени) 
+	// отдельно для первого и второго прерывания
+	// а потом вычислять их разницу
+	// для контроля можно вычислять среднюю скорость и общий угловой путь для каждого диска
 
-	//angle = (inter_time - prev_it - first_inter_time + prev_fit) * speed_delta; // 0.00036 = 4 ср./с * 90 гр. / 10^6 мкс
-
-	time_delta_first = first_inter_time + prev_fit;
-	time_delta_second = inter_time - prev_it;
-
-	angle = time_delta_second * abs(first_inter_count / (float)time_delta_first - inter_count / (float)time_delta_second) * 90;
-
-	//tft.fillScreen(ST7735_BLACK);
-
-	//tft.setCursor(0, 20);
-	//tft.print(inter_time);
-
-	//tft.setCursor(0, 50);
-	//tft.print(angle);
-
-	// Отладочный вывод
-	Serial.println((String)inter_time + "\t" + (String)angle + "\t" + (String)inter_count + "\t|\t" + (String)first_inter_count + "\t" + (String)(first_inter_count / time_delta_first * 250000) + "\t" + (String)first_inter_time);
-	//
-	prev_fit = first_inter_time;
-	prev_it = inter_time;
+	time_delta_first = first_inter_time - prev_first_inter_time;
+	prev_first_inter_time = first_inter_time;
+	aver_first_inter_time = time_delta_first / float(first_inter_count);	// время прохода угла в 90 градусов
 	first_inter_count = 0;
-	inter_count = 0;
+	first_delta_angle = 90 * INTERVAL * 1000 / aver_first_inter_time;
 
-	delay(1000);
+	time_delta_second = second_inter_time - prev_second_inter_time;
+	prev_second_inter_time = second_inter_time;
+	aver_second_inter_time = time_delta_second / second_inter_count;
+	second_inter_count = 0;
+	second_delta_angle = 90 * INTERVAL * 1000 / aver_second_inter_time;
+
+	angle = first_delta_angle - second_delta_angle;
+	Serial.println((String)time_delta_first + "\t" + (String)time_delta_second + "\t" + (String)angle)
+
+	delay(INTERVAL);	// интервал задаётся в миллисекундах
 }
 
 void OnFirstInterruption()
@@ -101,6 +83,6 @@ void OnFirstInterruption()
 
 void OnSecondInterruption()
 {
-	inter_time = micros();
-	inter_count++;
+	second_inter_time = micros();
+	second_inter_count++;
 }
