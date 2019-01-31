@@ -35,6 +35,9 @@ unsigned long prev_it = 0;
 unsigned long inter_count = 0;  // количество прерываний
 unsigned long first_inter_count = 0;
 
+unsigned long time_delta_first = 0;
+unsigned long time_delta_second = 0;
+
 long angle = 0;
 
 //float speed_first = 0.;
@@ -66,7 +69,10 @@ void loop()
 
 	//angle = (inter_time - prev_it - first_inter_time + prev_fit) * speed_delta; // 0.00036 = 4 ср./с * 90 гр. / 10^6 мкс
 
-	angle = (inter_time - prev_it - first_inter_time + prev_fit) * abs(first_inter_count / first_inter_time - inter_count / inter_time) * 250000;
+	time_delta_first = first_inter_time + prev_fit;
+	time_delta_second = inter_time - prev_it;
+
+	angle = time_delta_second * abs(first_inter_count / (float)time_delta_first - inter_count / (float)time_delta_second) * 90;
 
 	//tft.fillScreen(ST7735_BLACK);
 
@@ -77,7 +83,7 @@ void loop()
 	//tft.print(angle);
 
 	// Отладочный вывод
-	Serial.println((String)inter_time + "\t" + (String)angle + "\t" + (String)inter_count + "\t|\t" + (String)first_inter_count + "\t" + (String)(first_inter_count / first_inter_time * 250000) + "\t" + (String)first_inter_time);
+	Serial.println((String)inter_time + "\t" + (String)angle + "\t" + (String)inter_count + "\t|\t" + (String)first_inter_count + "\t" + (String)(first_inter_count / time_delta_first * 250000) + "\t" + (String)first_inter_time);
 	//
 	prev_fit = first_inter_time;
 	prev_it = inter_time;
