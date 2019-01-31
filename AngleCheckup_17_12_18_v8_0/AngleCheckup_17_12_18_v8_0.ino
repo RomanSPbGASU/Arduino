@@ -52,27 +52,27 @@ void setup()
 
 void loop()
 {
-	// будем считать изменения угла за 1 секунду (или другой интервал времени) 
-	// отдельно для первого и второго прерывания
-	// а потом вычислять их разницу
-	// для контроля можно вычислять среднюю скорость и общий угловой путь для каждого диска
+	// Будем считать изменения угла за 1 секунду (или другой интервал времени) 
+	// отдельно для первого и второго прерывания,
+	// а потом вычислять их разницу.
+	// Для контроля можно вычислять среднюю скорость и общий угловой путь для каждого диска
+	if (!(millis() % INTERVAL))
+	{
+		time_delta_first = first_inter_time - prev_first_inter_time;
+		prev_first_inter_time = first_inter_time;
+		aver_first_inter_time = time_delta_first / float(first_inter_count);	// время прохода угла в 90 градусов
+		first_inter_count = 0;
+		first_delta_angle = 90 * INTERVAL * 1000 / aver_first_inter_time;
 
-	time_delta_first = first_inter_time - prev_first_inter_time;
-	prev_first_inter_time = first_inter_time;
-	aver_first_inter_time = time_delta_first / float(first_inter_count);	// время прохода угла в 90 градусов
-	first_inter_count = 0;
-	first_delta_angle = 90 * INTERVAL * 1000 / aver_first_inter_time;
+		time_delta_second = second_inter_time - prev_second_inter_time;
+		prev_second_inter_time = second_inter_time;
+		aver_second_inter_time = time_delta_second / second_inter_count;
+		second_inter_count = 0;
+		second_delta_angle = 90 * INTERVAL * 1000 / aver_second_inter_time;
 
-	time_delta_second = second_inter_time - prev_second_inter_time;
-	prev_second_inter_time = second_inter_time;
-	aver_second_inter_time = time_delta_second / second_inter_count;
-	second_inter_count = 0;
-	second_delta_angle = 90 * INTERVAL * 1000 / aver_second_inter_time;
-
-	angle = first_delta_angle - second_delta_angle;
-	Serial.println((String)time_delta_first + "\t" + (String)time_delta_second + "\t" + (String)angle)
-
-	delay(INTERVAL);	// интервал задаётся в миллисекундах
+		angle = first_delta_angle - second_delta_angle;
+		Serial.println((String)time_delta_first + "\t" + (String)time_delta_second + "\t" + (String)angle);
+	}
 }
 
 void OnFirstInterruption()
