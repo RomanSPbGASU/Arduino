@@ -24,14 +24,12 @@ const int INTERVAL = 200; // интервал обновления значен�
 
 unsigned long first_inter_time = 0;
 unsigned long prev_first_inter_time = 0;
-unsigned long time_delta_first = 0;
-long aver_first_inter_time = 0;
+long time_delta_first = 0;
 unsigned long first_inter_count = 0;
 
 unsigned long second_inter_time = 0;
 unsigned long prev_second_inter_time = 0;
-unsigned long time_delta_second = 0;
-long aver_second_inter_time = 0;
+long time_delta_second = 0;
 unsigned long second_inter_count = 0;
 
 float angle = 0;
@@ -47,7 +45,7 @@ void setup()
 	tft.setTextSize(2);
 	attachInterrupt(1, OnFirstInterruption, RISING);
 	attachInterrupt(0, OnSecondInterruption, RISING);
-	Serial.println("Delta_first\tDelta_second\tAngle");  // отладочный вывод
+	Serial.println("Delta_first\tDelta_second\tAngle");  // Отладочный вывод
 }
 
 void loop()
@@ -59,15 +57,13 @@ void loop()
 
 	time_delta_first = first_inter_time - prev_first_inter_time;
 	prev_first_inter_time = first_inter_time;
-	aver_first_inter_time = time_delta_first / first_inter_count;  // время прохода угла в 90 градусов
 	first_inter_count = 0;
 
 	time_delta_second = second_inter_time - prev_second_inter_time;
 	prev_second_inter_time = second_inter_time;
-	aver_second_inter_time = time_delta_second / second_inter_count;
 	second_inter_count = 0;
 
-	angle += 90000L * INTERVAL * (aver_second_inter_time - aver_first_inter_time) / (aver_first_inter_time * aver_second_inter_time);
+	angle += (time_delta_first * second_inter_count - time_delta_second * first_inter_count) * 90000L / float(time_delta_first * time_delta_second) * INTERVAL;
 
 	// Отладочный вывод
 	Serial.println((String)time_delta_first + "\t\t" + (String)time_delta_second + "\t\t" + (String)angle);
