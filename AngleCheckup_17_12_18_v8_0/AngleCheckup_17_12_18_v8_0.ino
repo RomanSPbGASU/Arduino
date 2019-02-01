@@ -20,7 +20,7 @@
 
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
-const int INTERVAL = 1000; // интервал обновления значений - 1 секунда
+const int INTERVAL = 2000; // интервал обновления значений - 1 секунда
 
 unsigned long first_inter_time = 0;
 unsigned long prev_first_inter_time = 0;
@@ -61,7 +61,7 @@ void loop()
 
 	time_delta_first = first_inter_time - prev_first_inter_time;
 	prev_first_inter_time = first_inter_time;
-	aver_first_inter_time = time_delta_first / float(first_inter_count);	// время прохода угла в 90 градусов
+	aver_first_inter_time = time_delta_first / float(first_inter_count);  // время прохода угла в 90 градусов
 	first_inter_count = 0;
 	first_delta_angle = 90l * INTERVAL * 1000 / aver_first_inter_time;
 
@@ -71,11 +71,11 @@ void loop()
 	second_inter_count = 0;
 	second_delta_angle = 90l * INTERVAL * 1000 / aver_second_inter_time;
 
-	angle = first_delta_angle - second_delta_angle;
+	angle += first_delta_angle - second_delta_angle;
 
 	// Отладочный вывод
 	Serial.println((String)time_delta_first + "\t" + (String)time_delta_second + "\t" + (String)angle);
- delay(INTERVAL);
+	delay(INTERVAL);
 }
 
 void OnFirstInterruption()
