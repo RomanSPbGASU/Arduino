@@ -20,7 +20,7 @@
 
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
-const int INTERVAL = 2000; // интервал обновления значений - 1 секунда
+const int INTERVAL = 200; // интервал обновления значений
 
 unsigned long first_inter_time = 0;
 unsigned long prev_first_inter_time = 0;
@@ -74,7 +74,7 @@ void loop()
 	angle += first_delta_angle - second_delta_angle;
 
 	// Отладочный вывод
-	Serial.println((String)time_delta_first + "\t" + (String)time_delta_second + "\t" + (String)angle);
+	Serial.println((String)time_delta_first + "\t\t" + (String)time_delta_second + "\t\t" + (String)angle);
 	delay(INTERVAL);
 }
 
