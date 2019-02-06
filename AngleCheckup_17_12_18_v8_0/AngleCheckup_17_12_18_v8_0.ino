@@ -81,11 +81,11 @@ void loop()
 	delay(INTERVAL);
 }
 
-void OnFirstInterruption()
-{
-	first_inter_time = micros();
-	first_inter_count++;
-}
+//void OnFirstInterruption()
+//{
+//	first_inter_time = micros();
+//	first_inter_count++;
+//}
 
 void OnSecondInterruption()
 {
