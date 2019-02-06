@@ -20,23 +20,23 @@
 
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
-const int INTERVAL = 200; // интервал обновления значений - 1 секунда
+const long INTERVAL = 2000; // интервал обновления значений
 
 unsigned long first_inter_time = 0;
 unsigned long prev_first_inter_time = 0;
 unsigned long time_delta_first = 0;
-float aver_first_inter_time = 0;
-float first_inter_count = 0;
-float first_delta_angle = 0;
+unsigned long aver_first_inter_time = 0;
+unsigned long first_inter_count = 0;
+unsigned long first_delta_angle = 0;
 
 unsigned long second_inter_time = 0;
 unsigned long prev_second_inter_time = 0;
 unsigned long time_delta_second = 0;
-float aver_second_inter_time = 0;
-float second_inter_count = 0;
-float second_delta_angle = 0;
+unsigned long aver_second_inter_time = 0;
+unsigned long second_inter_count = 0;
+unsigned long second_delta_angle = 0;
 
-float angle = 0;
+long angle = 0;
 
 
 void setup()
@@ -49,7 +49,7 @@ void setup()
 	tft.setTextSize(2);
 	attachInterrupt(1, OnFirstInterruption, RISING);
 	attachInterrupt(0, OnSecondInterruption, RISING);
-	Serial.println("Delta_first\tDelta_second\tAngle");  // отладочный вывод
+	Serial.println("Count_first\tCount_second\tDelta_first\tDelta_second\tAngle");  // отладочный вывод
 }
 
 void loop()
@@ -57,42 +57,27 @@ void loop()
 	// Будем считать изменения угла за 1 секунду (или другой интервал времени) 
 	// отдельно для первого и второго прерывания,
 	// а потом вычислять их разницу.
-	// Для контроля можно вычислять среднюю скорость и общий угловой путь для каждого диска
 
 	time_delta_first = first_inter_time - prev_first_inter_time;
-	//Serial.print("\ntime_delta_first ");
-	//Serial.print(time_delta_first);
 	prev_first_inter_time = first_inter_time;
 	aver_first_inter_time = time_delta_first / first_inter_count;  // время прохода угла в 90 градусов
-	//Serial.print("\nfirst_inter_count ");
-	//Serial.print(first_inter_count);
-	//Serial.print("\naver_first_inter_time ");
-	//Serial.print(aver_first_inter_time);
+	Serial.print(first_inter_count);
+	Serial.print("\t\t");
 	first_inter_count = 0;
-	first_delta_angle = 90l * INTERVAL * 1000 / aver_first_inter_time;
-	//Serial.print("\nfirst_delta_angle ");
-	//Serial.print(first_delta_angle);
+	first_delta_angle = 90l * INTERVAL * 1000l / aver_first_inter_time;
 
-	//Serial.println();
 	time_delta_second = second_inter_time - prev_second_inter_time;
-	//Serial.print("\ntime_delta_second ");
-	//Serial.print(time_delta_second);
 	prev_second_inter_time = second_inter_time;
 	aver_second_inter_time = time_delta_second / second_inter_count;
-	//Serial.print("\nsecond_inter_count ");
-	//Serial.print(second_inter_count);
-	//Serial.print("\naver_second_inter_time ");
-	//Serial.print(aver_second_inter_time);
+	Serial.print(second_inter_count);
+	Serial.print("\t\t");
 	second_inter_count = 0;
-	second_delta_angle = 90l * INTERVAL * 1000 / aver_second_inter_time;
-	//Serial.print("\nsecond_delta_angle ");
-	//Serial.print(second_delta_angle);
+	second_delta_angle = 90l * INTERVAL * 1000l / aver_second_inter_time;
 
-
-	angle += first_delta_angle - second_delta_angle;
+	angle += long(first_delta_angle - second_delta_angle);
 
 	// Отладочный вывод
-	Serial.println((String)time_delta_first + "\t" + (String)time_delta_second + "\t" + (String)angle);
+	Serial.println((String)time_delta_first + "\t\t" + (String)time_delta_second + "\t\t" + (String)angle);
 	delay(INTERVAL);
 }
 
