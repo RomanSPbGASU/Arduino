@@ -11,7 +11,6 @@
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7735.h> // Hardware-specific library
 #include <SPI.h>
-#include <math.h>
 
 #define TFT_CS     10
 #define TFT_RST    12  // you can also connect this to the Arduino reset
@@ -20,7 +19,7 @@
 
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
-const long INTERVAL = 2000; // интервал обновления значений
+const long INTERVAL = 200; // интервал обновления значений
 
 unsigned long first_inter_time = 0;
 unsigned long prev_first_inter_time = 0;
@@ -81,11 +80,11 @@ void loop()
 	delay(INTERVAL);
 }
 
-//void OnFirstInterruption()
-//{
-//	first_inter_time = micros();
-//	first_inter_count++;
-//}
+void OnFirstInterruption()
+{
+	first_inter_time = micros();
+	first_inter_count++;
+}
 
 void OnSecondInterruption()
 {
