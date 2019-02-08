@@ -37,6 +37,46 @@ float second_delta_angle = 0;
 
 float angle = 0;
 
+// можно попробовать оба варианта функции
+//unsigned long micros() {
+//	unsigned long m;
+//	uint8_t oldSREG = SREG, t;
+//
+//	cli();
+//	m = timer0_overflow_count;
+//#if defined(TCNT0)
+//	t = TCNT0;
+//#elif defined(TCNT0L)
+//	t = TCNT0L;
+//#else
+//#error TIMER 0 not defined
+//#endif
+//
+//
+//#ifdef TIFR0
+//	if ((TIFR0& _BV(TOV0)) && (t & 255))
+//		m++;
+//#else
+//	if ((TIFR& _BV(TOV0)) && (t & 255))
+//		m++;
+//#endif
+//
+//	SREG = oldSREG;
+//
+//	return ((m << 8) + t) * (64 / clockCyclesPerMicrosecond());
+//}
+
+static unsigned long micros() {
+	extern volatile unsigned long timer0_overflow_count;
+	uint8_t oldSREG = SREG;
+	cli();
+	uint32_t t = TCNT0;
+	if ((TIFR0& _BV(TOV0)) && (t == 0))
+		t = 256;
+	uint32_t m = timer0_overflow_count;
+	SREG = oldSREG;
+	return ((m << 8) + t) * (64 / clockCyclesPerMicrosecond());
+}
 
 void setup()
 {
