@@ -21,18 +21,18 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
 const long INTERVAL = 200; // интервал обновления значений
 
-unsigned long first_inter_time = 0;
+volatile unsigned long first_inter_time = 0;
 unsigned long prev_first_inter_time = 0;
 unsigned long time_delta_first = 0;
 float aver_first_inter_time = 0;
-unsigned long first_inter_count = 0;
+volatile unsigned long first_inter_count = 0;
 float first_delta_angle = 0;
 
-unsigned long second_inter_time = 0;
+volatile unsigned long second_inter_time = 0;
 unsigned long prev_second_inter_time = 0;
 unsigned long time_delta_second = 0;
 float aver_second_inter_time = 0;
-unsigned long second_inter_count = 0;
+volatile unsigned long second_inter_count = 0;
 float second_delta_angle = 0;
 
 float angle = 0;
