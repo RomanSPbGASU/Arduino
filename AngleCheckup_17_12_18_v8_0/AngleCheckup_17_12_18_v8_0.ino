@@ -24,59 +24,18 @@ const long INTERVAL = 500; // интервал обновления значен
 volatile unsigned long first_inter_time = 0;
 unsigned long prev_first_inter_time = 0;
 unsigned long time_delta_first = 0;
-float aver_first_inter_time = 0;
+unsigned long aver_first_inter_time = 0;
 volatile unsigned long first_inter_count = 0;
-float first_delta_angle = 0;
+long first_delta_angle = 0;
 
 volatile unsigned long second_inter_time = 0;
 unsigned long prev_second_inter_time = 0;
 unsigned long time_delta_second = 0;
-float aver_second_inter_time = 0;
+unsigned long aver_second_inter_time = 0;
 volatile unsigned long second_inter_count = 0;
-float second_delta_angle = 0;
+long second_delta_angle = 0;
 
-float angle = 0;
-
-// можно попробовать оба варианта функции
-//unsigned long micros() {
-//	unsigned long m;
-//	uint8_t oldSREG = SREG, t;
-//
-//	cli();
-//	m = timer0_overflow_count;
-//#if defined(TCNT0)
-//	t = TCNT0;
-//#elif defined(TCNT0L)
-//	t = TCNT0L;
-//#else
-//#error TIMER 0 not defined
-//#endif
-//
-//
-//#ifdef TIFR0
-//	if ((TIFR0& _BV(TOV0)) && (t & 255))
-//		m++;
-//#else
-//	if ((TIFR& _BV(TOV0)) && (t & 255))
-//		m++;
-//#endif
-//
-//	SREG = oldSREG;
-//
-//	return ((m << 8) + t) * (64 / clockCyclesPerMicrosecond());
-//}
-
-static unsigned long micros() {
-	extern volatile unsigned long timer0_overflow_count;
-	uint8_t oldSREG = SREG;
-	cli();
-	uint32_t t = TCNT0;
-	if ((TIFR0& _BV(TOV0)) && (t == 0))
-		t = 256;
-	uint32_t m = timer0_overflow_count;
-	SREG = oldSREG;
-	return ((m << 8) + t) * (64 / clockCyclesPerMicrosecond());
-}
+long angle = 0;
 
 void setup()
 {
@@ -100,13 +59,13 @@ void loop()
 		prev_first_inter_time = first_inter_time;
 		prev_second_inter_time = second_inter_time;
 
-		aver_first_inter_time = float(time_delta_first) / float(first_inter_count);  // время прохода угла в 90 градусов
+		aver_first_inter_time = time_delta_first / first_inter_count;  // время прохода угла в 90 градусов
 		Serial.print(first_inter_count);
 		first_inter_count = 0;
 		Serial.print("\t\t");
 		first_delta_angle = 90l * time_delta_first / aver_first_inter_time;
 
-		aver_second_inter_time = float(time_delta_second) / float(second_inter_count);
+		aver_second_inter_time = time_delta_second) / second_inter_count);
 		Serial.print(second_inter_count);
 		second_inter_count = 0;
 		Serial.print("\t\t");
