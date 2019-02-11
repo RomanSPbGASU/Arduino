@@ -5,18 +5,18 @@
 const long INTERVAL = 500; // интервал обновления значений
 
 unsigned long time_delta_first = 0;
-float aver_first_inter_time = 0;
+unsigned long aver_first_inter_time = 0;
 unsigned long first_inter_count = 0;
-float first_delta = 0;
+long first_delta = 0;
 
 unsigned long time_delta_second = 0;
-float aver_second_inter_time = 0;
+unsigned long aver_second_inter_time = 0;
 unsigned long second_inter_count = 0;
-float second_delta = 0;
+long second_delta = 0;
 
 float garbage;
 
-float angle = 0;
+long angle = 0;
 
 int main()
 {
