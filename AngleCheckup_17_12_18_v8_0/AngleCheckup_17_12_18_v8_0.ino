@@ -23,7 +23,7 @@ float aver_second_inter_time = 0;
 volatile unsigned int second_inter_count = 0;
 float second_delta = 0;
 
-float angle = 0;
+float dif = 0;
 
 void setup()
 {
@@ -35,24 +35,23 @@ void setup()
 
 void loop()
 {
-	time_delta_first = first_inter_time - prev_first_inter_time;
-	time_delta_second = second_inter_time - prev_second_inter_time;
-	if ((time_delta_first > 0) && (time_delta_second > 0))
+	if (first_inter_count && second_inter_count)
 	{
+		time_delta_first = first_inter_time - prev_first_inter_time;
+		time_delta_second = second_inter_time - prev_second_inter_time;
+
 		if (!(time_delta_second == 196608 || time_delta_second == 262144 || time_delta_second == 16777216) &&
 			!(time_delta_first == 196608 || time_delta_first == 262144 || time_delta_first == 16777216))
 		{
 			prev_first_inter_time = first_inter_time;
 			prev_second_inter_time = second_inter_time;
 
-			Serial.print((String)first_inter_count + "\t\t");
-			first_inter_count = 0;
-
 			Serial.print((String)second_inter_count + "\t\t");
 			second_inter_count = 0;
 			second_delta = time_delta_first / time_delta_second * second_inter_count;
 
 			dif += first_inter_count - second_delta;
+			first_inter_count = 0;
 
 			// Отладочный вывод
 			Serial.println((String)time_delta_first + "\t\t" + (String)time_delta_second + "\t\t" + (String)(90 * dif));

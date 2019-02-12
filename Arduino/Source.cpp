@@ -19,7 +19,7 @@ unsigned long aver_second_inter_time = 0;
 unsigned long second_inter_count = 0;
 unsigned long second_delta_angle = 0;
 
-long angle = 0;
+long dif = 0;
 
 
 void setup()
@@ -49,7 +49,7 @@ void loop()
 	second_inter_count = 0;
 	second_delta_angle = 90l * INTERVAL * 1000l / aver_second_inter_time;
 
-	angle += long(first_delta_angle - second_delta_angle);
+	dif += long(first_delta_angle - second_delta_angle);
 
 	// Отладочный вывод
 	Serial.println((String)time_delta_first + "\t\t" + (String)time_delta_second + "\t\t" + (String)angle);
