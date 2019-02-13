@@ -12,63 +12,45 @@
 #include <Adafruit_ST7735.h> // Hardware-specific library
 
 volatile unsigned long first_inter_time = 0;
-volatile unsigned long prev_first_inter_time = 0;
-volatile float time_delta_first = 0.;
-volatile unsigned int first_inter_count = 0;
 
 volatile unsigned long second_inter_time = 0;
-volatile unsigned long prev_second_inter_time = 0;
-volatile float time_delta_second = 0.;
-float aver_second_inter_time = 0;
-volatile unsigned int second_inter_count = 0;
-float second_delta = 0;
+unsigned unsigned long prev_second_inter_time = 0;
+float time_delta_second = 0.;
 
-float dif = 0;
+volatile long difference = 0;
+
+volatile long delta = 0;
+
 
 void setup()
 {
 	Serial.begin(9600);
 	attachInterrupt(1, OnFirstInterruption, RISING);
 	attachInterrupt(0, OnSecondInterruption, RISING);
-	Serial.println("Count_first\tCount_second\tDelta_first\tDelta_second\tAngle");  // отладочный вывод
 }
 
 void loop()
 {
-	if (first_inter_count && second_inter_count)
+	if (time_delta_second = second_inter_time - prev_second_inter_time)
 	{
-		time_delta_first = first_inter_time - prev_first_inter_time;
-		time_delta_second = second_inter_time - prev_second_inter_time;
-
-		if (!(time_delta_second == 196608 || time_delta_second == 262144 || time_delta_second == 16777216) &&
-			!(time_delta_first == 196608 || time_delta_first == 262144 || time_delta_first == 16777216))
+		if (first_inter_time > prev_second_inter_time)
 		{
-			prev_first_inter_time = first_inter_time;
-			prev_second_inter_time = second_inter_time;
+			delta = second_inter_time - first_inter_time;
+			Serial.println((String)difference + "\t" + (String)delta + "\t" + (String)time_delta_second + "\t" + (String)(90 * (difference - delta / time_delta_second)));
 
-			Serial.print((String)second_inter_count + "\t\t");
-			second_inter_count = 0;
-			second_delta = time_delta_first / time_delta_second * second_inter_count;
-
-			dif += first_inter_count - second_delta;
-			first_inter_count = 0;
-
-			// Отладочный вывод
-			Serial.println((String)time_delta_first + "\t\t" + (String)time_delta_second + "\t\t" + (String)(90 * dif));
 		}
-		else
-			Serial.println("Invalid value");
+		prev_second_inter_time = second_inter_time;
 	}
 }
 
 void OnFirstInterruption()
 {
-	++first_inter_count;
+	++difference;
 	first_inter_time = micros();
 }
 
 void OnSecondInterruption()
 {
-	++second_inter_count;
+	--difference;
 	second_inter_time = micros();
 }
